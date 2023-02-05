@@ -2,38 +2,38 @@ package com.github.awiodev.jbdd.allure;
 
 import com.github.awiodev.jbdd.core.JBddCallable;
 import com.github.awiodev.jbdd.core.JBddRunnable;
-import com.github.awiodev.jbdd.core.JBddSteps;
+import com.github.awiodev.jbdd.core.JBddBaseSteps;
 import io.qameta.allure.Param;
 import io.qameta.allure.Step;
 import io.qameta.allure.model.Parameter;
 
-public class JBddAllureSteps extends JBddSteps<JBddAllureSteps> {
+public class JBddAllureBaseSteps extends JBddBaseSteps<JBddAllureBaseSteps> {
     @Override
-    protected JBddAllureSteps child() {
+    protected JBddAllureBaseSteps child() {
         return this;
     }
 
     @Step("given {given}")
-    public JBddAllureSteps given(@Param(mode = Parameter.Mode.HIDDEN) String given,
-                                 @Param(mode = Parameter.Mode.HIDDEN) JBddRunnable runnable) {
+    public JBddAllureBaseSteps given(@Param(mode = Parameter.Mode.HIDDEN) String given,
+                                     @Param(mode = Parameter.Mode.HIDDEN) JBddRunnable runnable) {
         return super.given(given, runnable);
     }
 
     @Step("when {when}")
-    public JBddAllureSteps when(@Param(mode = Parameter.Mode.HIDDEN) String when,
-                                @Param(mode = Parameter.Mode.HIDDEN) JBddRunnable runnable) {
+    public JBddAllureBaseSteps when(@Param(mode = Parameter.Mode.HIDDEN) String when,
+                                    @Param(mode = Parameter.Mode.HIDDEN) JBddRunnable runnable) {
         return super.when(when, runnable);
     }
 
     @Step("then {then}")
-    public JBddAllureSteps then(@Param(mode = Parameter.Mode.HIDDEN) String then,
-                                @Param(mode = Parameter.Mode.HIDDEN) JBddRunnable runnable) {
+    public JBddAllureBaseSteps then(@Param(mode = Parameter.Mode.HIDDEN) String then,
+                                    @Param(mode = Parameter.Mode.HIDDEN) JBddRunnable runnable) {
         return super.then(then, runnable);
     }
 
     @Step("and {then}")
-    public JBddAllureSteps and(@Param(mode = Parameter.Mode.HIDDEN) String and,
-                               @Param(mode = Parameter.Mode.HIDDEN) JBddRunnable runnable) {
+    public JBddAllureBaseSteps and(@Param(mode = Parameter.Mode.HIDDEN) String and,
+                                   @Param(mode = Parameter.Mode.HIDDEN) JBddRunnable runnable) {
         return super.and(and, runnable);
     }
 

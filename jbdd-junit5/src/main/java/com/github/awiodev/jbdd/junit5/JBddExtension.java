@@ -1,75 +1,68 @@
 package com.github.awiodev.jbdd.junit5;
 
 import com.github.awiodev.jbdd.core.JBddRun;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.api.extension.ParameterResolver;
+import com.github.awiodev.jbdd.core.JBddSteps;
+import com.github.awiodev.jbdd.core.JBddBaseRun;
+import com.github.awiodev.jbdd.core.JBddBaseSteps;
 
-public abstract class JBddExtension<TRun extends JBddRun<?>> implements BeforeEachCallback,
-    AfterEachCallback, BeforeAllCallback, AfterAllCallback, ParameterResolver {
+public class JBddExtension extends JBddBaseExtension<JBddRun> {
 
-    @FunctionalInterface
-    public interface JBddSetup<TRun extends JBddRun<?>> {
-        TRun perform();
+    private final JBddBaseSteps<?> steps;
+    private final JBddSetup<JBddRun> setup;
+    private final JBddTearDown<JBddRun> teardown;
+
+    public JBddExtension() {
+        steps = new JBddSteps();
+        setup = () -> new JBddRun(steps);
+        teardown = JBddBaseRun::cleanup;
     }
 
-    @FunctionalInterface
-    public interface JBddTearDown<TRun extends JBddRun<?>> {
-        void perform(TRun run);
-    }
-
-    private final Map<String, TRun> runs = new ConcurrentHashMap<>();
-
-    protected abstract JBddSetup<TRun> setup();
-
-    protected abstract JBddTearDown<TRun> teardown();
-
-    @Override
-    public void afterAll(ExtensionContext context) {
+    public JBddExtension(JBddBaseSteps<?> steps, JBddSetup<JBddRun> setup,
+                         JBddTearDown<JBddRun> teardown) {
+        this.steps = steps;
+        this.setup = setup;
+        this.teardown = teardown;
     }
 
     @Override
-    public void beforeAll(ExtensionContext context) {
+    protected JBddSetup<JBddRun> setup() {
+        return setup;
     }
 
     @Override
-    public void afterEach(ExtensionContext context) {
-        TRun run = setup(context.getUniqueId());
-        teardown().perform(run);
+    protected JBddTearDown<JBddRun> teardown() {
+        return teardown;
     }
 
-    @Override
-    public void beforeEach(ExtensionContext context) {
-        setup(context.getUniqueId());
+    public static JBddDefaultExtensionBuilder builder() {
+        return new JBddDefaultExtensionBuilder();
     }
 
-    @Override
-    public boolean supportsParameter(ParameterContext parameterContext,
-                                     ExtensionContext extensionContext)
-        throws ParameterResolutionException {
+    public static final class JBddDefaultExtensionBuilder {
+        private JBddBaseSteps<?> steps;
+        private JBddSetup<JBddRun> setup;
+        private JBddTearDown<JBddRun> teardown;
 
-        return JBddRun.class.isAssignableFrom(parameterContext.getParameter().getType());
-    }
-
-    @Override
-    public Object resolveParameter(ParameterContext parameterContext,
-                                   ExtensionContext extensionContext)
-        throws ParameterResolutionException {
-        return setup(extensionContext.getUniqueId());
-    }
-
-    private TRun setup(String uniqueId) {
-        if (!runs.containsKey(uniqueId)) {
-            TRun run = setup().perform();
-            runs.put(uniqueId, run);
+        private JBddDefaultExtensionBuilder() {
         }
-        return runs.get(uniqueId);
+
+        public JBddDefaultExtensionBuilder withSteps(JBddBaseSteps<?> steps) {
+            this.steps = steps;
+            return this;
+        }
+
+        public JBddDefaultExtensionBuilder withSetup(JBddSetup<JBddRun> setup) {
+            this.setup = setup;
+            return this;
+        }
+
+        public JBddDefaultExtensionBuilder withTeardown(JBddTearDown<JBddRun> teardown) {
+            this.teardown = teardown;
+            return this;
+        }
+
+        public JBddExtension build() {
+            return new JBddExtension(steps, setup, teardown);
+        }
     }
 }
