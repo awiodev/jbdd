@@ -1,0 +1,66 @@
+plugins {
+    id 'java-library'
+    id "base"
+    //id "checkstyle"
+    id 'jacoco'
+    //id "com.github.spotbugs" version "4.7.6"
+    id "maven-publish"
+}
+
+allprojects {
+
+    group build_group
+    version build_version
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+
+    //apply plugin: 'checkstyle'
+    //apply plugin: 'com.github.spotbugs'
+    apply plugin: 'java-library'
+    apply plugin: 'jacoco'
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
+    ext {
+        junitVersion = '5.8.2'
+        assertJVersion = '3.22.0'
+        allureVersion = '2.20.1'
+    }
+
+    configurations {
+        all {
+            exclude module: "log4j-to-slf4j"
+            exclude group: "ch.qos.logback"
+        }
+    }
+
+    dependencies {
+        constraints {
+            api "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+            api "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+            api "org.assertj:assertj-core:$assertJVersion"
+            api "io.qameta.allure:allure-java-commons:$allureVersion"
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    /*checkstyle {
+        toolVersion = '9.0'
+        ignoreFailures = false
+        maxWarnings = 0
+        showViolations = true
+    }*/
+}
+
+wrapper {
+    gradleVersion = "7.6"
+}
