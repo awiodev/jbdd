@@ -109,6 +109,7 @@ subprojects {
                 artifact tasks.sourceJar
                 artifact tasks.javadocJar
                 pom.withXml {
+                    asNode().appendNode('description', 'Simple BDD abstraction')
                     asNode().children().last() + pomInfo
                 }
             }
