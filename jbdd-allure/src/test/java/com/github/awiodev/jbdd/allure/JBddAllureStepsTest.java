@@ -70,7 +70,7 @@ public class JBddAllureStepsTest {
 
         @Test
         void whenProvidedDuringRegistration(JBddRun jBdd) {
-            Assertions.assertThat(jBdd.steps()).isEqualTo(steps);
+            Assertions.assertThat(jBdd.scenario()).isEqualTo(steps);
         }
     }
 }

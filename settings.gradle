@@ -10,6 +10,5 @@
 rootProject.name = 'jbdd'
 include 'jbdd-core'
 include 'jbdd-allure'
-include 'jbdd-rest-allured'
 include 'jbdd-junit5'
 

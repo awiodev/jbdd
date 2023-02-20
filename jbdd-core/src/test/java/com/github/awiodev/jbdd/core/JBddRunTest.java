@@ -16,7 +16,7 @@ public class JBddRunTest {
         @Test
         void returnsStepsObjectWhenCalled() {
             var run = new JBddRun(steps);
-            Assertions.assertThat(run.steps()).isEqualTo(steps);
+            Assertions.assertThat(run.scenario()).isEqualTo(steps);
         }
     }
 

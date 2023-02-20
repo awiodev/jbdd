@@ -5,6 +5,7 @@ plugins {
     id 'jacoco'
     //id "com.github.spotbugs" version "4.7.6"
     id "maven-publish"
+    id "signing"
 }
 
 allprojects {
@@ -22,7 +23,9 @@ subprojects {
     //apply plugin: 'checkstyle'
     //apply plugin: 'com.github.spotbugs'
     apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
     apply plugin: 'jacoco'
+    apply plugin: 'signing'
 
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
@@ -31,6 +34,29 @@ subprojects {
         junitVersion = '5.8.2'
         assertJVersion = '3.22.0'
         allureVersion = '2.20.1'
+
+        pomInfo = {
+            name 'jBdd'
+            url 'https://github.com/awiodev/jbdd'
+            scm {
+                connection 'https://github.com/awiodev/jbdd.git'
+                developerConnection 'https://github.com/awiodev/jbdd.git'
+                url 'https://github.com/awiodev/jbdd'
+            }
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id 'awiodev'
+                    name 'awiodev'
+                }
+            }
+        }
     }
 
     configurations {
@@ -49,17 +75,81 @@ subprojects {
         }
     }
 
-    test {
-        useJUnitPlatform()
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
     }
 
-    /*checkstyle {
-        toolVersion = '9.0'
-        ignoreFailures = false
-        maxWarnings = 0
-        showViolations = true
-    }*/
+    task sourceJar(type: Jar) {
+        classifier 'sources'
+        from sourceSets.main.allJava
+    }
+
+    publishing {
+
+        repositories {
+            maven {
+
+                if(build_version.endsWith('-SNAPSHOT')) {
+                    url 'https://s01.oss.sonatype.org/content/repositories/snapshots'
+                } else {
+                    url 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2'
+                }
+
+                credentials {
+                    username System.env.MVNC_USR
+                    password System.env.MVNC_PW
+                }
+            }
+        }
+
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact tasks.sourceJar
+                artifact tasks.javadocJar
+                pom.withXml {
+                    asNode().children().last() + pomInfo
+                }
+            }
+        }
+    }
+
+    signing {
+        def signingKey = findProperty("signingKey")
+        def signingPassword = findProperty("signingPassword")
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications)
+    }
+
+    test {
+        useJUnitPlatform()
+
+        jacoco {
+            enabled = true
+        }
+    }
+
+    jacocoTestReport {
+        executionData(test)
+    }
+
+    jacocoTestCoverageVerification {
+        executionData(test)
+
+        violationRules {
+            rule {
+                limit {
+                    minimum = 1
+                }
+            }
+        }
+    }
+
+    jacocoTestCoverageVerification.dependsOn(jacocoTestReport)
+    check.dependsOn(jacocoTestCoverageVerification)
 }
+
 
 wrapper {
     gradleVersion = "7.6"

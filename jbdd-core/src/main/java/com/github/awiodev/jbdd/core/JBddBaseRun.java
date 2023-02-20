@@ -13,7 +13,7 @@ public abstract class JBddBaseRun<TSteps extends JBddBaseSteps<?>> {
         this.steps = steps;
     }
 
-    public TSteps steps() {
+    public TSteps scenario() {
         return steps;
     }
 

@@ -33,7 +33,7 @@ public class JBddManualExtensionRegistrationTest {
         @Test
         void whenRegisteredUsingFieldAnnotation(JBddRun jBdd) {
             Assertions.assertThat(jBdd).isNotNull();
-            Assertions.assertThat(jBdd.steps()).isNotNull();
+            Assertions.assertThat(jBdd.scenario()).isNotNull();
             Assertions.assertThat(events.size()).isEqualTo(1);
         }
     }
