@@ -1,68 +1,142 @@
 package com.github.awiodev.jbdd.junit5;
 
-import com.github.awiodev.jbdd.core.JBddRun;
-import com.github.awiodev.jbdd.core.JBddSteps;
-import com.github.awiodev.jbdd.core.JBddBaseRun;
-import com.github.awiodev.jbdd.core.JBddBaseSteps;
+import com.github.awiodev.jbdd.core.definition.JBddRun;
+import com.github.awiodev.jbdd.core.impl.JBdd;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 
-public class JBddExtension extends JBddBaseExtension<JBddRun> {
+/**
+ * Junit5 extension that enables injection of JBddRun into test methods.
+ * Both automatic and manual extension registrations are supported.
+ */
+public class JBddExtension implements BeforeEachCallback,
+    AfterEachCallback, BeforeAllCallback, AfterAllCallback, ParameterResolver {
 
-    private final JBddBaseSteps<?> steps;
-    private final JBddSetup<JBddRun> setup;
-    private final JBddTearDown<JBddRun> teardown;
-
-    public JBddExtension() {
-        steps = new JBddSteps();
-        setup = () -> new JBddRun(steps);
-        teardown = JBddBaseRun::cleanup;
+    /**
+     * Represents unique run setup.
+     * @param <TRun> as a run type
+     */
+    @FunctionalInterface
+    public interface JBddSetup<TRun extends JBddRun<?, ?>> {
+        TRun perform();
     }
 
-    public JBddExtension(JBddBaseSteps<?> steps, JBddSetup<JBddRun> setup,
-                         JBddTearDown<JBddRun> teardown) {
-        this.steps = steps;
+    /**
+     * Represents unique run tear down after test.
+     * @param <TRun> as a run type
+     */
+    @FunctionalInterface
+    public interface JBddTearDown<TRun extends JBddRun<?, ?>> {
+        void perform(TRun run);
+    }
+
+    private final Map<String, JBddRun<?, ?>> runs = new ConcurrentHashMap<>();
+    private final JBddSetup<JBddRun<?, ?>> setup;
+    private final JBddTearDown<JBddRun<?, ?>> teardown;
+
+    /**
+     * For automatic registration.
+     */
+    public JBddExtension() {
+        setup = () -> JBdd.builder().build();
+        teardown = JBddRun::clean;
+    }
+
+    /**
+     * For manual registration.
+     */
+    public JBddExtension(JBddSetup<JBddRun<?, ?>> setup,
+                         JBddTearDown<JBddRun<?, ?>> teardown) {
         this.setup = setup;
         this.teardown = teardown;
     }
 
     @Override
-    protected JBddSetup<JBddRun> setup() {
-        return setup;
+    public void afterAll(ExtensionContext context) {
     }
 
     @Override
-    protected JBddTearDown<JBddRun> teardown() {
-        return teardown;
+    public void beforeAll(ExtensionContext context) {
     }
 
-    public static JBddDefaultExtensionBuilder builder() {
-        return new JBddDefaultExtensionBuilder();
+    @Override
+    public void afterEach(ExtensionContext context) {
+        try {
+            JBddRun<?, ?> run = setup(context.getUniqueId());
+            teardown.perform(run);
+        } catch (Exception e) {
+            // ignore
+        } finally {
+            runs.remove(context.getUniqueId());
+        }
     }
 
-    public static final class JBddDefaultExtensionBuilder {
-        private JBddBaseSteps<?> steps;
-        private JBddSetup<JBddRun> setup;
-        private JBddTearDown<JBddRun> teardown;
+    @Override
+    public void beforeEach(ExtensionContext context) {
+        setup(context.getUniqueId());
+    }
 
-        private JBddDefaultExtensionBuilder() {
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext,
+                                     ExtensionContext extensionContext)
+        throws ParameterResolutionException {
+
+        return JBddRun.class.isAssignableFrom(parameterContext.getParameter().getType());
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext,
+                                   ExtensionContext extensionContext)
+        throws ParameterResolutionException {
+        return setup(extensionContext.getUniqueId());
+    }
+
+    /**
+     * Sets up unique run or returns exestring run
+     * @param uniqueId as a run key
+     * @return JBdd run object
+     */
+    private JBddRun<?, ?> setup(String uniqueId) {
+        if (!runs.containsKey(uniqueId)) {
+            JBddRun<?, ?> run = setup.perform();
+            runs.put(uniqueId, run);
+        }
+        return runs.get(uniqueId);
+    }
+
+    public static JBddExtensionBuilder builder() {
+        return new JBddExtensionBuilder();
+    }
+
+    public static final class JBddExtensionBuilder {
+        private JBddSetup<JBddRun<?, ?>> setup;
+        private JBddTearDown<JBddRun<?, ?>> teardown;
+
+        private JBddExtensionBuilder() {
         }
 
-        public JBddDefaultExtensionBuilder withSteps(JBddBaseSteps<?> steps) {
-            this.steps = steps;
-            return this;
-        }
-
-        public JBddDefaultExtensionBuilder withSetup(JBddSetup<JBddRun> setup) {
+        public JBddExtensionBuilder withSetupAndTearDown(JBddSetup<JBddRun<?, ?>> setup,
+                                                         JBddTearDown<JBddRun<?, ?>> teardown) {
             this.setup = setup;
-            return this;
-        }
-
-        public JBddDefaultExtensionBuilder withTeardown(JBddTearDown<JBddRun> teardown) {
             this.teardown = teardown;
             return this;
         }
 
         public JBddExtension build() {
-            return new JBddExtension(steps, setup, teardown);
+
+            if (setup == null && teardown == null) {
+                return new JBddExtension();
+            }
+
+            return new JBddExtension(setup, teardown);
         }
     }
 }

@@ -1,11 +1,16 @@
 package com.github.awiodev.jbdd.junit5.custom;
 
-import com.github.awiodev.jbdd.core.JBddBaseRun;
+import com.github.awiodev.jbdd.core.definition.JBddRun;
+import com.github.awiodev.jbdd.core.impl.JBddStandardContext;
 
-public class MyJBddRun extends JBddBaseRun<MyJBddSteps> {
+public class MyJBddRun implements JBddRun<MyJBddSteps, JBddStandardContext> {
 
-    protected MyJBddRun(MyJBddSteps steps) {
-        super(steps);
+    private final MyJBddSteps steps;
+    private final JBddStandardContext context;
+
+    protected MyJBddRun(MyJBddSteps steps, JBddStandardContext context) {
+        this.steps = steps;
+        this.context = context;
     }
 
     public String customRunMethod() {
@@ -13,6 +18,16 @@ public class MyJBddRun extends JBddBaseRun<MyJBddSteps> {
     }
 
     @Override
-    protected void clean() {
+    public MyJBddSteps scenario() {
+        return steps;
+    }
+
+    @Override
+    public JBddStandardContext context() {
+        return context;
+    }
+
+    @Override
+    public void clean() {
     }
 }

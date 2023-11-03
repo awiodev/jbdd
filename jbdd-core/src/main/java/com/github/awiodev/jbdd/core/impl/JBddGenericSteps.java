@@ -1,8 +1,17 @@
-package com.github.awiodev.jbdd.core;
+package com.github.awiodev.jbdd.core.impl;
 
-public abstract class JBddBaseSteps<TSteps extends JBddBaseSteps<?>> {
+import com.github.awiodev.jbdd.core.definition.JBddCallable;
+import com.github.awiodev.jbdd.core.definition.JBddRunnable;
+import com.github.awiodev.jbdd.core.definition.JBddSteps;
 
-    protected abstract TSteps child();
+public final class JBddGenericSteps<TSteps extends JBddSteps<?>>
+    implements JBddSteps<TSteps> {
+
+    private final TSteps chainParent;
+
+    public JBddGenericSteps(TSteps chainParent) {
+        this.chainParent = chainParent;
+    }
 
     public TSteps given(String given, JBddRunnable runnable) {
         return runnable(runnable);
@@ -20,9 +29,9 @@ public abstract class JBddBaseSteps<TSteps extends JBddBaseSteps<?>> {
         return runnable(runnable);
     }
 
-    protected TSteps runnable(JBddRunnable runnable) {
+    private TSteps runnable(JBddRunnable runnable) {
         runnable.perform();
-        return child();
+        return chainParent;
     }
 
     public <T> T given(String given, JBddCallable<T> callable) {
@@ -41,7 +50,7 @@ public abstract class JBddBaseSteps<TSteps extends JBddBaseSteps<?>> {
         return callable(callable);
     }
 
-    protected <T> T callable(JBddCallable<T> callable) {
+    private <T> T callable(JBddCallable<T> callable) {
         return callable.perform();
     }
 }

@@ -1,28 +1,13 @@
 package com.github.awiodev.jbdd.junit5.custom;
 
-import com.github.awiodev.jbdd.core.JBddBaseRun;
-import com.github.awiodev.jbdd.core.JBddRun;
-import com.github.awiodev.jbdd.core.JBddSteps;
-import com.github.awiodev.jbdd.junit5.JBddBaseExtension;
+import com.github.awiodev.jbdd.core.definition.JBddRun;
+import com.github.awiodev.jbdd.core.impl.JBddStandardContextProvider;
+import com.github.awiodev.jbdd.junit5.JBddExtension;
 
-public class MyCustomExtension extends JBddBaseExtension<MyJBddRun> {
-
-    private JBddSetup<MyJBddRun> setup;
-    private JBddTearDown<MyJBddRun> teardown;
+public class MyCustomExtension extends JBddExtension {
 
     public MyCustomExtension() {
-        var steps = new MyJBddSteps();
-        setup = () -> new MyJBddRun(steps);
-        teardown = JBddBaseRun::cleanup;
-    }
-
-    @Override
-    protected JBddSetup<MyJBddRun> setup() {
-        return setup;
-    }
-
-    @Override
-    protected JBddTearDown<MyJBddRun> teardown() {
-        return teardown;
+        super(() -> new MyJBddRun(MyJBddSteps.builder().build(),
+            new JBddStandardContextProvider().provide()), JBddRun::clean);
     }
 }

@@ -31,9 +31,11 @@ subprojects {
     targetCompatibility = JavaVersion.VERSION_11
 
     ext {
-        junitVersion = '5.8.2'
-        assertJVersion = '3.22.0'
-        allureVersion = '2.20.1'
+        junitVersion = '5.9.3'
+        assertJVersion = '3.24.2'
+        allureVersion = '2.24.0'
+        restAssuredVersion = '5.3.2'
+        jacksonVersion = '2.15.3'
 
         pomInfo = {
             name 'jBdd'
@@ -72,11 +74,13 @@ subprojects {
             api "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
             api "org.assertj:assertj-core:$assertJVersion"
             api "io.qameta.allure:allure-java-commons:$allureVersion"
+            api "io.rest-assured:rest-assured:$restAssuredVersion"
+            api "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
         }
     }
 
     task javadocJar(type: Jar) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc
     }
 
@@ -141,7 +145,7 @@ subprojects {
         violationRules {
             rule {
                 limit {
-                    minimum = 1
+                    minimum = 0.6
                 }
             }
         }

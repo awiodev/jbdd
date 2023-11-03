@@ -1,7 +1,7 @@
 package com.github.awiodev.jbdd.allure;
 
-import com.github.awiodev.jbdd.core.JBddBaseRun;
-import com.github.awiodev.jbdd.core.JBddRun;
+import com.github.awiodev.jbdd.core.definition.JBddRun;
+import com.github.awiodev.jbdd.core.impl.JBdd;
 import com.github.awiodev.jbdd.junit5.JBddExtension;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -14,7 +14,7 @@ public class JBddAllureStepsTest {
     class WithJBddAllureSteps {
         @Test
         void itIsPossibleToChain() {
-            var steps = new JBddAllureBaseSteps();
+            var steps = JBddAllureSteps.builder().build();
 
             steps.given("My run just started", () -> {
                 // No step implementation required
@@ -29,47 +29,45 @@ public class JBddAllureStepsTest {
 
         @Test
         void givenStepCanReturnValue() {
-            var steps = new JBddAllureBaseSteps();
+            var steps = JBddAllureSteps.builder().build();
             int returned = steps.given("I have a number", () -> 10);
             Assertions.assertThat(returned).isEqualTo(10);
         }
 
         @Test
         void whenStepCanReturnValue() {
-            var steps = new JBddAllureBaseSteps();
+            var steps = JBddAllureSteps.builder().build();
             int returned = steps.when("I create a number", () -> 10);
             Assertions.assertThat(returned).isEqualTo(10);
         }
 
         @Test
         void thenStepCanReturnValue() {
-            var steps = new JBddAllureBaseSteps();
+            var steps = JBddAllureSteps.builder().build();
             int returned = steps.then("I receive a number", () -> 10);
             Assertions.assertThat(returned).isEqualTo(10);
         }
 
         @Test
         void andStepCanReturnValue() {
-            var steps = new JBddAllureBaseSteps();
+            var steps = JBddAllureSteps.builder().build();
             int returned = steps.and("I receive a number", () -> 10);
             Assertions.assertThat(returned).isEqualTo(10);
         }
     }
 
-    private final JBddAllureBaseSteps steps = new JBddAllureBaseSteps();
+    private final JBddAllureSteps steps = JBddAllureSteps.builder().build();
 
     @RegisterExtension
     private final JBddExtension extension = JBddExtension.builder()
-            .withSteps(steps)
-            .withSetup(() -> new JBddRun(steps))
-            .withTeardown(JBddBaseRun::cleanup)
-            .build();
+        .withSetupAndTearDown(() -> JBdd.builder().withSteps(steps).build(), JBddRun::clean)
+        .build();
 
     @Nested
     class AllureStepsAreInjected {
 
         @Test
-        void whenProvidedDuringRegistration(JBddRun jBdd) {
+        void whenProvidedDuringRegistration(JBdd jBdd) {
             Assertions.assertThat(jBdd.scenario()).isEqualTo(steps);
         }
     }

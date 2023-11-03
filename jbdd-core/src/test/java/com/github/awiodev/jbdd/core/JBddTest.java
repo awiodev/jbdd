@@ -1,21 +1,22 @@
 package com.github.awiodev.jbdd.core;
 
+import com.github.awiodev.jbdd.core.impl.JBdd;
+import com.github.awiodev.jbdd.core.impl.JBddStandardSteps;
+import java.util.NoSuchElementException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.NoSuchElementException;
+public class JBddTest {
 
-public class JBddRunTest {
-
-    private final JBddSteps steps = new JBddSteps();
+    private final JBddStandardSteps steps = JBddStandardSteps.builder().build();
 
     @Nested
     class Steps {
 
         @Test
         void returnsStepsObjectWhenCalled() {
-            var run = new JBddRun(steps);
+            var run = JBdd.builder().withSteps(steps).build();
             Assertions.assertThat(run.scenario()).isEqualTo(steps);
         }
     }
@@ -25,19 +26,19 @@ public class JBddRunTest {
 
         @Test
         void storesAndRetrievesObjectByKeyAndValue() {
-            var run = new JBddRun(steps);
+            var run = JBdd.builder().withSteps(steps).build();
             String key = "myKey";
             var expected = 123L;
-            run.store(key, expected);
-            Assertions.assertThat(run.get(key, Long.class)).isEqualTo(expected);
+            run.context().store(key, expected);
+            Assertions.assertThat(run.context().get(key, Long.class)).isEqualTo(expected);
         }
 
         @Test
         void storesAndRetrievesObjectByType() {
-            var run = new JBddRun(steps);
+            var run = JBdd.builder().withSteps(steps).build();
             var expected = new MyTestObject();
-            run.store(expected);
-            MyTestObject actual = run.get(MyTestObject.class);
+            run.context().store(expected);
+            MyTestObject actual = run.context().get(MyTestObject.class);
             Assertions.assertThat(actual).isEqualTo(expected);
         }
     }
@@ -47,12 +48,12 @@ public class JBddRunTest {
 
         @Test
         void removesItemsFromContext() {
-            var run = new JBddRun(steps);
+            var run = JBdd.builder().withSteps(steps).build();
             var object = new MyTestObject();
-            run.store(object);
-            run.cleanup();
+            run.context().store(object);
+            run.context().cleanup();
             Assertions.assertThatThrownBy(() ->
-                    run.get(MyTestObject.class)).isInstanceOf(NoSuchElementException.class);
+                run.context().get(MyTestObject.class)).isInstanceOf(NoSuchElementException.class);
         }
     }
 

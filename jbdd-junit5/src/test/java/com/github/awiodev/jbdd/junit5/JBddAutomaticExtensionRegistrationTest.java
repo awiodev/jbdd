@@ -1,6 +1,6 @@
 package com.github.awiodev.jbdd.junit5;
 
-import com.github.awiodev.jbdd.core.JBddRun;
+import com.github.awiodev.jbdd.core.impl.JBdd;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ public class JBddAutomaticExtensionRegistrationTest {
     class ExtensionRegistered {
 
         @Test
-        void whenRegisteredUsingClassAnnotation(JBddRun jBdd) {
+        void whenRegisteredUsingClassAnnotation(JBdd jBdd) {
             Assertions.assertThat(jBdd).isNotNull();
             Assertions.assertThat(jBdd.scenario()).isNotNull();
         }
