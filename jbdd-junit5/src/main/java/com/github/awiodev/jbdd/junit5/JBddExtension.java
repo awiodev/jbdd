@@ -1,9 +1,10 @@
 package com.github.awiodev.jbdd.junit5;
 
 import com.github.awiodev.jbdd.core.definition.JBddRun;
+import com.github.awiodev.jbdd.core.definition.ObjectsDatabase;
 import com.github.awiodev.jbdd.core.impl.JBdd;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.github.awiodev.jbdd.core.impl.ObjectsMapDatabase;
+import java.util.UUID;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -22,6 +23,7 @@ public class JBddExtension implements BeforeEachCallback,
 
     /**
      * Represents unique run setup.
+     *
      * @param <TRun> as a run type
      */
     @FunctionalInterface
@@ -31,6 +33,7 @@ public class JBddExtension implements BeforeEachCallback,
 
     /**
      * Represents unique run tear down after test.
+     *
      * @param <TRun> as a run type
      */
     @FunctionalInterface
@@ -38,7 +41,8 @@ public class JBddExtension implements BeforeEachCallback,
         void perform(TRun run);
     }
 
-    private final Map<String, JBddRun<?, ?>> runs = new ConcurrentHashMap<>();
+    private final String sessionId;
+    private final ObjectsDatabase runs;
     private final JBddSetup<JBddRun<?, ?>> setup;
     private final JBddTearDown<JBddRun<?, ?>> teardown;
 
@@ -46,17 +50,26 @@ public class JBddExtension implements BeforeEachCallback,
      * For automatic registration.
      */
     public JBddExtension() {
+        sessionId = generateSessionId();
         setup = () -> JBdd.builder().build();
         teardown = JBddRun::clean;
+        runs = ObjectsMapDatabase.builder().build();
     }
 
     /**
      * For manual registration.
      */
-    public JBddExtension(JBddSetup<JBddRun<?, ?>> setup,
+    public JBddExtension(ObjectsDatabase runs,
+                         JBddSetup<JBddRun<?, ?>> setup,
                          JBddTearDown<JBddRun<?, ?>> teardown) {
+        sessionId = generateSessionId();
+        this.runs = runs;
         this.setup = setup;
         this.teardown = teardown;
+    }
+
+    private String generateSessionId() {
+        return UUID.randomUUID().toString();
     }
 
     @Override
@@ -75,7 +88,7 @@ public class JBddExtension implements BeforeEachCallback,
         } catch (Exception e) {
             // ignore
         } finally {
-            runs.remove(context.getUniqueId());
+            runs.delete(sessionId, context.getUniqueId());
         }
     }
 
@@ -101,15 +114,16 @@ public class JBddExtension implements BeforeEachCallback,
 
     /**
      * Sets up unique run or returns exestring run
+     *
      * @param uniqueId as a run key
      * @return JBdd run object
      */
     private JBddRun<?, ?> setup(String uniqueId) {
-        if (!runs.containsKey(uniqueId)) {
+        if (!runs.contains(sessionId, uniqueId)) {
             JBddRun<?, ?> run = setup.perform();
-            runs.put(uniqueId, run);
+            runs.save(sessionId, uniqueId, run);
         }
-        return runs.get(uniqueId);
+        return runs.get(sessionId, uniqueId, JBddRun.class);
     }
 
     public static JBddExtensionBuilder builder() {
@@ -119,6 +133,8 @@ public class JBddExtension implements BeforeEachCallback,
     public static final class JBddExtensionBuilder {
         private JBddSetup<JBddRun<?, ?>> setup;
         private JBddTearDown<JBddRun<?, ?>> teardown;
+
+        private ObjectsDatabase runs;
 
         private JBddExtensionBuilder() {
         }
@@ -130,13 +146,22 @@ public class JBddExtension implements BeforeEachCallback,
             return this;
         }
 
+        public JBddExtensionBuilder withObjectsDatabase(ObjectsDatabase objectsDatabase) {
+            this.runs = objectsDatabase;
+            return this;
+        }
+
         public JBddExtension build() {
 
             if (setup == null && teardown == null) {
                 return new JBddExtension();
             }
 
-            return new JBddExtension(setup, teardown);
+            if (runs == null) {
+                runs = ObjectsMapDatabase.builder().build();
+            }
+
+            return new JBddExtension(runs, setup, teardown);
         }
     }
 }

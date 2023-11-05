@@ -3,8 +3,12 @@ package com.github.awiodev.jbdd.core.impl;
 import com.github.awiodev.jbdd.core.definition.JBddCallable;
 import com.github.awiodev.jbdd.core.definition.JBddRunnable;
 import com.github.awiodev.jbdd.core.definition.JBddSteps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JBddStandardSteps implements JBddSteps<JBddStandardSteps> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JBddStandardSteps.class);
 
     private final JBddSteps<JBddStandardSteps> parent;
 
@@ -68,11 +72,13 @@ public class JBddStandardSteps implements JBddSteps<JBddStandardSteps> {
 
         public JBddStepsBuilder withParent(JBddSteps<JBddStandardSteps> parent) {
             this.parent = parent;
+            LOGGER.info("Provided parent instance: {}", parent);
             return this;
         }
 
         public JBddStandardSteps build() {
             if (parent == null) {
+                LOGGER.info("Parent not provided. Default JBddStandardSteps created");
                 return new JBddStandardSteps();
             }
             return new JBddStandardSteps(parent);

@@ -5,11 +5,11 @@ package com.github.awiodev.jbdd.core.definition;
  * @param <TContext> for context type
  */
 @FunctionalInterface
-public interface JBddContextProvider<TContext extends JBddContext> {
+public interface JBddContextFactory<TContext extends JBddContext> {
 
     /**
      * Provides unique context instance.
      * @return given context type
      */
-    TContext provide();
+    JBddContext create();
 }

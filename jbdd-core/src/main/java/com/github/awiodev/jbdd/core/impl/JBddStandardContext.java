@@ -1,34 +1,34 @@
 package com.github.awiodev.jbdd.core.impl;
 
 import com.github.awiodev.jbdd.core.definition.JBddContext;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import com.github.awiodev.jbdd.core.definition.ObjectsDatabase;
+import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JBddStandardContext implements JBddContext {
 
-    private final Map<String, Object> context;
+    private static final Logger LOGGER = LoggerFactory.getLogger(JBddStandardContext.class);
 
-    private JBddStandardContext(Map<String, Object> context) {
-        this.context = context;
+    private final String sessionId;
+    private final ObjectsDatabase database;
+
+    private JBddStandardContext(String sessionId, ObjectsDatabase database) {
+        this.sessionId = sessionId;
+        this.database = database;
     }
 
     public void store(String key, Object value) {
-        context.put(key, value);
+        database.save(sessionId, key, value);
     }
 
     public void store(Object value) {
         String key = value.getClass().getName();
-        context.put(key, value);
+        database.save(sessionId, key, value);
     }
 
     public <T> T get(String key, Class<T> clazz) {
-        Object value = context.get(key);
-        if (value == null) {
-            throw new NoSuchElementException(
-                String.format("Context does not contain value for the given key: %s", key));
-        }
-        return clazz.cast(value);
+        return database.get(sessionId, key, clazz);
     }
 
     public <T> T get(Class<T> clazz) {
@@ -36,7 +36,7 @@ public class JBddStandardContext implements JBddContext {
     }
 
     public void cleanup() {
-        context.clear();
+        database.deleteSession(sessionId);
     }
 
     public static JBddStandardContextBuilder builder() {
@@ -44,23 +44,27 @@ public class JBddStandardContext implements JBddContext {
     }
 
     public static final class JBddStandardContextBuilder {
-        private Map<String, Object> context;
+        private ObjectsDatabase database;
 
         private JBddStandardContextBuilder() {
         }
 
-        public JBddStandardContextBuilder withContext(Map<String, Object> context) {
-            this.context = context;
+        public JBddStandardContextBuilder withDatabase(ObjectsDatabase database) {
+            this.database = database;
+            LOGGER.debug("Provided database instance: {}", database);
             return this;
         }
 
         public JBddStandardContext build() {
 
-            if (context == null) {
-                context = new HashMap<>();
+            if (database == null) {
+                LOGGER.info("Database not provided. ObjectsMapDatabase will be used as default");
+                database = ObjectsMapDatabase.builder().build();
             }
 
-            return new JBddStandardContext(context);
+            String sessionId = UUID.randomUUID().toString();
+            LOGGER.info("Generated context session id: {}", sessionId);
+            return new JBddStandardContext(sessionId, database);
         }
     }
 }

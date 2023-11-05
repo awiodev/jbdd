@@ -20,7 +20,6 @@ public interface JBddContext {
 
     /**
      * Retrieves stored key value and casts to provided class type.
-     * Throws NoSuchElementException when value is not present in context.
      * @param key for key name
      * @param clazz for object type that should be returned
      * @return value for given key

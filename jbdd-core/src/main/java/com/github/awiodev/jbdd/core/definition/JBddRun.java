@@ -5,7 +5,7 @@ package com.github.awiodev.jbdd.core.definition;
  * @param <TSteps> for type of steps object
  * @param <TContext> for type of context object
  */
-public interface JBddRun<TSteps extends JBddSteps<?>, TContext extends JBddContext> {
+public interface JBddRun<TSteps extends Steps, TContext extends JBddContext> {
 
     /**
      * Provides scenario steps.

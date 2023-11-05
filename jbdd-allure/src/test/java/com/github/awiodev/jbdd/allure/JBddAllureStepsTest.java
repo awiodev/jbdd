@@ -2,6 +2,8 @@ package com.github.awiodev.jbdd.allure;
 
 import com.github.awiodev.jbdd.core.definition.JBddRun;
 import com.github.awiodev.jbdd.core.impl.JBdd;
+import com.github.awiodev.jbdd.core.impl.JBddStandardContext;
+import com.github.awiodev.jbdd.core.impl.JBddStandardContextFactory;
 import com.github.awiodev.jbdd.junit5.JBddExtension;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -60,7 +62,11 @@ public class JBddAllureStepsTest {
 
     @RegisterExtension
     private final JBddExtension extension = JBddExtension.builder()
-        .withSetupAndTearDown(() -> JBdd.builder().withSteps(steps).build(), JBddRun::clean)
+        .withSetupAndTearDown(() -> JBdd.builder()
+                .withSteps(steps)
+                .withContextFactory(JBddStandardContextFactory.builder().build())
+                .build(),
+            JBddRun::clean)
         .build();
 
     @Nested
