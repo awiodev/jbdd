@@ -6,8 +6,11 @@ import com.github.awiodev.jbdd.core.definition.JBddSteps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class JBddGenericSteps<TSteps extends JBddSteps<?>>
-    implements JBddSteps<TSteps> {
+/**
+ * Generic BDD chaining steps. Final because it is recommended to use composition instead of inheritance.
+ * @param <TSteps> for type of parent steps type
+ */
+public final class JBddGenericSteps<TSteps extends JBddSteps<?>> implements JBddSteps<TSteps> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JBddGenericSteps.class);
 

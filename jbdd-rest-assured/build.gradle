@@ -6,6 +6,7 @@ dependencies {
     api(project(":jbdd-core"))
     api 'io.rest-assured:rest-assured'
     api 'com.fasterxml.jackson.core:jackson-databind'
+    api 'org.assertj:assertj-core'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

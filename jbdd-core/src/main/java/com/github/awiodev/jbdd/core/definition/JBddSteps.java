@@ -4,7 +4,7 @@ package com.github.awiodev.jbdd.core.definition;
  * Represents given/when/then steps object.
  * @param <TSteps> for steps type
  */
-public interface JBddSteps<TSteps extends Steps> extends Steps {
+public interface JBddSteps<TSteps extends JBddSteps<?>> extends Steps {
 
     /**
      * Chained Given step definition.

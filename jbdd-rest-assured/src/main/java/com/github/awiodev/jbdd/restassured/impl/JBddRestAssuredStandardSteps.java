@@ -1,18 +1,19 @@
 package com.github.awiodev.jbdd.restassured.impl;
 
-import com.github.awiodev.jbdd.core.definition.Steps;
 import com.github.awiodev.jbdd.restassured.definition.AuthSupplier;
+import com.github.awiodev.jbdd.restassured.definition.JBddRestAssuredSteps;
 import io.restassured.response.Response;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 
 /**
  * Rest assured steps abstraction.
  */
-public class JBddRestAssuredSteps implements Steps {
+public class JBddRestAssuredStandardSteps implements JBddRestAssuredSteps {
 
     private final RestAssuredActions restAssuredActions;
 
-    private JBddRestAssuredSteps(RestAssuredActions restAssuredActions) {
+    private JBddRestAssuredStandardSteps(RestAssuredActions restAssuredActions) {
         this.restAssuredActions = restAssuredActions;
     }
 
@@ -89,14 +90,25 @@ public class JBddRestAssuredSteps implements Steps {
         return restAssuredActions.delete(baseUrl, path);
     }
 
-    public Response whenPath(String baseUrl, String path, Object payload,
-                             AuthSupplier authSupplier) {
+    public Response whenPatch(String baseUrl, String path, Object payload,
+                              AuthSupplier authSupplier) {
 
         return restAssuredActions.patch(baseUrl, path, payload, authSupplier);
     }
 
-    public Response whenPath(String baseUrl, String path, Object payload) {
+    public Response whenPatch(String baseUrl, String path, Object payload) {
 
         return restAssuredActions.patch(baseUrl, path, payload);
+    }
+
+    @Override
+    public void thenResponseStatusIs(Response response, int expectedStatus) {
+        Assertions.assertThat(response.statusCode())
+            .describedAs("Response status code is not valid!").isEqualTo(expectedStatus);
+    }
+
+    @Override
+    public <T> T thenResponseDeserializesTo(Response response, Class<T> expectedResponseType) {
+        return response.as(expectedResponseType);
     }
 }

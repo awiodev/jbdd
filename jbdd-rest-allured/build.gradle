@@ -3,10 +3,10 @@ repositories {
 }
 
 dependencies {
-    api(project(":jbdd-core"))
-    api 'io.qameta.allure:allure-java-commons'
-    testImplementation(project(":jbdd-junit5"))
+    api(project(":jbdd-allure"))
+    api(project(":jbdd-rest-assured"))
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation(project(":jbdd-junit5"))
     testImplementation "org.assertj:assertj-core"
 }

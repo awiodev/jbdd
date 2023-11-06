@@ -12,4 +12,6 @@ include 'jbdd-core'
 include 'jbdd-allure'
 include 'jbdd-junit5'
 include 'jbdd-rest-assured'
+include 'jbdd-rest-allured'
+include 'jbdd-spring-boot'
 

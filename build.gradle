@@ -27,8 +27,8 @@ subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'signing'
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     ext {
         junitVersion = '5.9.3'
@@ -37,6 +37,7 @@ subprojects {
         restAssuredVersion = '5.3.2'
         jacksonVersion = '2.15.3'
         slf4jVersion = '2.0.9'
+        springBootVersion = '3.1.5'
 
         pomInfo = {
             name 'jBdd'
@@ -78,6 +79,8 @@ subprojects {
             api "io.rest-assured:rest-assured:$restAssuredVersion"
             api "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
             api "org.slf4j:slf4j-api:$slf4jVersion"
+            api "org.springframework.boot:spring-boot-starter:$springBootVersion"
+            api "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
         }
     }
 

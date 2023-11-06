@@ -2,7 +2,6 @@ package com.github.awiodev.jbdd.allure;
 
 import com.github.awiodev.jbdd.core.definition.JBddRun;
 import com.github.awiodev.jbdd.core.impl.JBdd;
-import com.github.awiodev.jbdd.core.impl.JBddStandardContext;
 import com.github.awiodev.jbdd.core.impl.JBddStandardContextFactory;
 import com.github.awiodev.jbdd.junit5.JBddExtension;
 import org.assertj.core.api.Assertions;
