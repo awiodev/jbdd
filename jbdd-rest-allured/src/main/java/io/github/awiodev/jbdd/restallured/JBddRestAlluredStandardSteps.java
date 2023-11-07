@@ -2,6 +2,7 @@ package io.github.awiodev.jbdd.restallured;
 
 import io.github.awiodev.jbdd.restassured.definition.AuthSupplier;
 import io.github.awiodev.jbdd.restassured.definition.JBddRestAssuredSteps;
+import io.github.awiodev.jbdd.restassured.impl.JBddRestAssuredStandardSteps;
 import io.qameta.allure.Param;
 import io.qameta.allure.Step;
 import io.qameta.allure.model.Parameter;
@@ -178,6 +179,11 @@ public class JBddRestAlluredStandardSteps implements JBddRestAssuredSteps {
         }
 
         public JBddRestAlluredStandardSteps build() {
+
+            if (restAssuredSteps == null) {
+                restAssuredSteps = JBddRestAssuredStandardSteps.builder().build();
+            }
+
             return new JBddRestAlluredStandardSteps(restAssuredSteps);
         }
     }

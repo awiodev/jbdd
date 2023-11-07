@@ -1,9 +1,9 @@
 package io.github.awiodev.jbdd.allure;
 
-import io.github.awiodev.jbdd.core.impl.JBddGenericSteps;
 import io.github.awiodev.jbdd.core.definition.JBddCallable;
 import io.github.awiodev.jbdd.core.definition.JBddRunnable;
 import io.github.awiodev.jbdd.core.definition.JBddSteps;
+import io.github.awiodev.jbdd.core.impl.JBddGenericSteps;
 import io.qameta.allure.Param;
 import io.qameta.allure.Step;
 import io.qameta.allure.model.Parameter;
@@ -14,10 +14,6 @@ public class JBddAllureSteps implements JBddSteps<JBddAllureSteps> {
 
     private JBddAllureSteps() {
         parent = new JBddGenericSteps<>(this);
-    }
-
-    private JBddAllureSteps(JBddSteps<JBddAllureSteps> parent) {
-        this.parent = parent;
     }
 
     @Step("given {given}")
@@ -73,23 +69,12 @@ public class JBddAllureSteps implements JBddSteps<JBddAllureSteps> {
     }
 
     public static final class JBddAllureBaseStepsBuilder {
-        private JBddSteps<JBddAllureSteps> parent;
 
         private JBddAllureBaseStepsBuilder() {
         }
 
-        public JBddAllureBaseStepsBuilder withParent(
-            JBddSteps<JBddAllureSteps> parent) {
-            this.parent = parent;
-            return this;
-        }
-
         public JBddAllureSteps build() {
-
-            if (parent == null) {
-                return new JBddAllureSteps();
-            }
-            return new JBddAllureSteps(parent);
+            return new JBddAllureSteps();
         }
     }
 }

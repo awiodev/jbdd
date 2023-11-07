@@ -1,7 +1,9 @@
 package io.github.awiodev.jbdd.junit5;
 
+import io.github.awiodev.jbdd.core.definition.ObjectsDatabase;
 import io.github.awiodev.jbdd.core.impl.JBdd;
 import io.github.awiodev.jbdd.core.impl.JBddStandardSteps;
+import io.github.awiodev.jbdd.core.impl.ObjectsMapDatabase;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -14,6 +16,8 @@ public class JBddManualExtensionRegistrationTest {
     private final JBddStandardSteps jBddStandardSteps = JBddStandardSteps.builder().build();
     private final List<String> events = new ArrayList<>();
 
+    private final ObjectsDatabase objectsDatabase = ObjectsMapDatabase.builder().build();
+
     @RegisterExtension
     private final JBddExtension extension = JBddExtension.builder()
         .withSetupAndTearDown(() -> {
@@ -23,6 +27,7 @@ public class JBddManualExtensionRegistrationTest {
             events.add("stop");
             run.clean();
         })
+        .withObjectsDatabase(objectsDatabase)
         .build();
 
     @Nested

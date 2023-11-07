@@ -26,6 +26,12 @@ public class ObjectsMapDatabase implements ObjectsDatabase {
     }
 
     private String uniqueKey(String sessionId, String key) {
+        if (sessionId == null || sessionId.isEmpty()) {
+            throw new NullPointerException("Session id cannot be null or empty");
+        }
+        if (key == null || key.isEmpty()) {
+            throw new NullPointerException("Key cannot be null or empty");
+        }
         return String.format("%s_%s", sessionId, key);
     }
 
@@ -45,6 +51,7 @@ public class ObjectsMapDatabase implements ObjectsDatabase {
 
     @Override
     public void deleteSession(String sessionId) {
+        uniqueKey(sessionId, "just_check");
         List<String> toRemove = new ArrayList<>();
         map.keySet().forEach(key -> {
             if (key.startsWith(sessionId)) {

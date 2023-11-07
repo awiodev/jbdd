@@ -9,4 +9,25 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation(project(":jbdd-junit5"))
     testImplementation "org.assertj:assertj-core"
+    testImplementation "org.mockito:mockito-core"
+    testImplementation 'org.wiremock:wiremock'
 }
+
+jacocoTestReport {
+    executionData(test)
+}
+
+jacocoTestCoverageVerification {
+    executionData(test)
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.95
+            }
+        }
+    }
+}
+
+jacocoTestCoverageVerification.dependsOn(jacocoTestReport)
+check.dependsOn(jacocoTestCoverageVerification)

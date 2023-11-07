@@ -16,7 +16,7 @@ public class JBddCustomRun implements JBddRun<JBddCustomSteps, JBddStandardConte
                          JBddBusinessSteps jBddBusinessSteps,
                          JBddStandardContextFactory standardContextFactory) {
         this.scenario = scenario;
-        this.jBddStandardContext = JBddStandardContext.builder().build();
+        this.jBddStandardContext = standardContextFactory.create();
         this.jBddBusinessSteps = jBddBusinessSteps;
     }
 
@@ -32,10 +32,5 @@ public class JBddCustomRun implements JBddRun<JBddCustomSteps, JBddStandardConte
 
     public JBddBusinessSteps businessSteps() {
         return jBddBusinessSteps;
-    }
-
-    @Override
-    public void clean() {
-        jBddStandardContext.cleanup();
     }
 }

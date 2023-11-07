@@ -22,5 +22,7 @@ public interface JBddRun<TSteps extends Steps, TContext extends JBddContext> {
     /**
      * Performs cleanup of test run resources.
      */
-    void clean();
+    default void clean() {
+        context().cleanup();
+    }
 }

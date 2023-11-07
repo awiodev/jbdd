@@ -26,8 +26,4 @@ public class MyJBddRun implements JBddRun<MyJBddSteps, JBddStandardContext> {
     public JBddStandardContext context() {
         return context;
     }
-
-    @Override
-    public void clean() {
-    }
 }

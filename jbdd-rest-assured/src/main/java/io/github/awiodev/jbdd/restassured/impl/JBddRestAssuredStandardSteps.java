@@ -111,4 +111,30 @@ public class JBddRestAssuredStandardSteps implements JBddRestAssuredSteps {
     public <T> T thenResponseDeserializesTo(Response response, Class<T> expectedResponseType) {
         return response.as(expectedResponseType);
     }
+
+    public static JBddRestAssuredStandardStepsBuilder builder() {
+        return new JBddRestAssuredStandardStepsBuilder();
+    }
+
+    public static final class JBddRestAssuredStandardStepsBuilder {
+        private RestAssuredActions restAssuredActions;
+
+        private JBddRestAssuredStandardStepsBuilder() {
+        }
+
+        public JBddRestAssuredStandardStepsBuilder withRestAssuredActions(
+            RestAssuredActions restAssuredActions) {
+            this.restAssuredActions = restAssuredActions;
+            return this;
+        }
+
+        public JBddRestAssuredStandardSteps build() {
+
+            if (restAssuredActions == null) {
+                restAssuredActions = RestAssuredActions.builder().build();
+            }
+
+            return new JBddRestAssuredStandardSteps(restAssuredActions);
+        }
+    }
 }

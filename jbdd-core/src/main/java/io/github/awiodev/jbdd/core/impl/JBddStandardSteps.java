@@ -16,10 +16,6 @@ public class JBddStandardSteps implements JBddSteps<JBddStandardSteps> {
         parent = new JBddGenericSteps<>(this);
     }
 
-    private JBddStandardSteps(JBddSteps<JBddStandardSteps> parent) {
-        this.parent = parent;
-    }
-
     @Override
     public JBddStandardSteps given(String given, JBddRunnable runnable) {
         return parent.given(given, runnable);
@@ -65,23 +61,12 @@ public class JBddStandardSteps implements JBddSteps<JBddStandardSteps> {
     }
 
     public static final class JBddStepsBuilder {
-        private JBddSteps<JBddStandardSteps> parent;
 
         private JBddStepsBuilder() {
         }
 
-        public JBddStepsBuilder withParent(JBddSteps<JBddStandardSteps> parent) {
-            this.parent = parent;
-            LOGGER.info("Provided parent instance: {}", parent);
-            return this;
-        }
-
         public JBddStandardSteps build() {
-            if (parent == null) {
-                LOGGER.info("Parent not provided. Default JBddStandardSteps created");
-                return new JBddStandardSteps();
-            }
-            return new JBddStandardSteps(parent);
+            return new JBddStandardSteps();
         }
     }
 }

@@ -12,7 +12,7 @@ public class JBddTest {
     private final JBddStandardSteps steps = JBddStandardSteps.builder().build();
 
     @Nested
-    class Steps {
+    class Scenario {
 
         @Test
         void returnsStepsObjectWhenCalled() {
@@ -22,42 +22,39 @@ public class JBddTest {
     }
 
     @Nested
-    class StoreAndGet {
+    class Context {
 
         @Test
-        void storesAndRetrievesObjectByKeyAndValue() {
-            var run = JBdd.builder().withSteps(steps).build();
-            String key = "myKey";
-            var expected = 123L;
-            run.context().store(key, expected);
-            Assertions.assertThat(run.context().get(key, Long.class)).isEqualTo(expected);
-        }
-
-        @Test
-        void storesAndRetrievesObjectByType() {
-            var run = JBdd.builder().withSteps(steps).build();
-            var expected = new MyTestObject();
-            run.context().store(expected);
-            MyTestObject actual = run.context().get(MyTestObject.class);
-            Assertions.assertThat(actual).isEqualTo(expected);
+        void returnsStepsObjectWhenCalled() {
+            var run = JBdd.builder()
+                .withSteps(steps)
+                .build();
+            Assertions.assertThat(run.context()).isNotNull();
         }
     }
 
     @Nested
-    class Cleanup {
+    class Clean {
 
         @Test
-        void removesItemsFromContext() {
-            var run = JBdd.builder().withSteps(steps).build();
-            var object = new MyTestObject();
-            run.context().store(object);
-            run.context().cleanup();
+        void cleansUpContextData() {
+            JBdd run = JBdd.builder().build();
+            run.context().store("key", "value");
+            run.clean();
+
             Assertions.assertThatThrownBy(() ->
-                run.context().get(MyTestObject.class)).isInstanceOf(NotFoundException.class);
+                    run.context().get("key", String.class))
+                .isInstanceOf(NotFoundException.class);
         }
     }
 
-    private static class MyTestObject {
-        private final String hello = "world";
+    @Nested
+    class Builder {
+
+        @Test
+        void createsDefaultStepsWhenNotProvided() {
+            JBdd run = JBdd.builder().build();
+            Assertions.assertThat(run.scenario()).isNotNull();
+        }
     }
 }

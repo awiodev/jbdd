@@ -12,7 +12,8 @@ public class JBddStandardContextFactory implements JBddContextFactory<JBddStanda
 
     @Override
     public JBddStandardContext create() {
-        JBddStandardContext instance = JBddStandardContext.builder().build();
+        JBddStandardContext instance = JBddStandardContext.builder()
+            .build();
         LOGGER.debug("Providing context instance: {}", instance);
         return instance;
     }

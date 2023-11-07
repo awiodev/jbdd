@@ -31,13 +31,6 @@ public class JBdd implements JBddRun<JBddSteps<? extends Steps>, JBddContext> {
         return context;
     }
 
-    @Override
-    public void clean() {
-        LOGGER.debug("Invoking JBdd run cleanup");
-        context.cleanup();
-        LOGGER.info("JBdd run cleanup complete");
-    }
-
     public static JBddRunBuilder builder() {
         return new JBddRunBuilder();
     }
@@ -71,7 +64,8 @@ public class JBdd implements JBddRun<JBddSteps<? extends Steps>, JBddContext> {
             JBddContext context;
 
             if (contextFactory == null) {
-                LOGGER.info("Context factory not provided. JBddStandardContext will be used as default");
+                LOGGER.info(
+                    "Context factory not provided. JBddStandardContext will be used as default");
                 context = JBddStandardContext.builder().build();
             } else {
                 LOGGER.info("Creating new context using context factory");

@@ -9,4 +9,25 @@ dependencies {
     api 'org.assertj:assertj-core'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation "org.mockito:mockito-core"
+    testImplementation 'org.wiremock:wiremock'
 }
+
+jacocoTestReport {
+    executionData(test)
+}
+
+jacocoTestCoverageVerification {
+    executionData(test)
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 1
+            }
+        }
+    }
+}
+
+jacocoTestCoverageVerification.dependsOn(jacocoTestReport)
+check.dependsOn(jacocoTestCoverageVerification)
