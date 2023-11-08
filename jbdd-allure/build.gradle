@@ -4,9 +4,28 @@ repositories {
 
 dependencies {
     api(project(":jbdd-core"))
-    api(project(":jbdd-junit5"))
-    api 'org.junit.jupiter:junit-jupiter-api'
-    api 'org.junit.jupiter:junit-jupiter-engine'
     api 'io.qameta.allure:allure-java-commons'
+    testImplementation(project(":jbdd-junit5"))
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation "org.assertj:assertj-core"
 }
+
+jacocoTestReport {
+    executionData(test)
+}
+
+jacocoTestCoverageVerification {
+    executionData(test)
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 1
+            }
+        }
+    }
+}
+
+jacocoTestCoverageVerification.dependsOn(jacocoTestReport)
+check.dependsOn(jacocoTestCoverageVerification)

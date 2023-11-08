@@ -1,0 +1,38 @@
+plugins {
+    id 'io.qameta.allure' version '2.11.2'
+}
+
+configurations {
+    agent
+}
+
+dependencies {
+    api(project(":jbdd-rest-allured"))
+    api(project(":jbdd-spring-boot"))
+    api(project(":jbdd-junit5"))
+    api 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.wiremock:wiremock'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation('com.github.javafaker:javafaker:1.0.2') {
+        exclude group: 'org.yaml', module: 'snakeyaml'
+    }
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.assertj:assertj-core'
+    testImplementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.21.1'
+    agent 'org.aspectj:aspectjweaver:1.9.20.1'
+}
+
+project.tasks.publish.enabled = false
+project.tasks.publishToMavenLocal.enabled = false
+project.tasks.publishMavenJavaPublicationToMavenLocal.enabled = false
+project.tasks.publishMavenJavaPublicationToMavenRepository.enabled = false
+
+jar {
+    enabled = false
+}
+
+
+tasks.test.doFirst {
+    jvmArgs "-javaagent:${configurations.agent.singleFile}"
+}

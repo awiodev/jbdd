@@ -1,5 +1,25 @@
 dependencies {
+    api 'org.slf4j:slf4j-api'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation 'org.assertj:assertj-core'
 }
+
+jacocoTestReport {
+    executionData(test)
+}
+
+jacocoTestCoverageVerification {
+    executionData(test)
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 1
+            }
+        }
+    }
+}
+
+jacocoTestCoverageVerification.dependsOn(jacocoTestReport)
+check.dependsOn(jacocoTestCoverageVerification)

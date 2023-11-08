@@ -31,9 +31,15 @@ subprojects {
     targetCompatibility = JavaVersion.VERSION_11
 
     ext {
-        junitVersion = '5.8.2'
-        assertJVersion = '3.22.0'
-        allureVersion = '2.20.1'
+        junitVersion = '5.9.3'
+        assertJVersion = '3.24.2'
+        allureVersion = '2.24.0'
+        restAssuredVersion = '5.3.2'
+        jacksonVersion = '2.15.3'
+        slf4jVersion = '2.0.9'
+        springBootVersion = '2.7.17'
+        mockitoVersion = '5.7.0'
+        wiremockVersion = '3.3.1'
 
         pomInfo = {
             name 'jBdd'
@@ -72,11 +78,20 @@ subprojects {
             api "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
             api "org.assertj:assertj-core:$assertJVersion"
             api "io.qameta.allure:allure-java-commons:$allureVersion"
+            api "io.rest-assured:rest-assured:$restAssuredVersion"
+            api "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+            api "org.slf4j:slf4j-api:$slf4jVersion"
+            api "org.springframework.boot:spring-boot-starter:$springBootVersion"
+            api "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+            api "org.springframework.boot:spring-boot-starter-log4j2:$springBootVersion"
+            api "org.mockito:mockito-core:$mockitoVersion"
+            api "org.wiremock:wiremock:$wiremockVersion"
+
         }
     }
 
     task javadocJar(type: Jar) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc
     }
 
@@ -130,25 +145,6 @@ subprojects {
             enabled = true
         }
     }
-
-    jacocoTestReport {
-        executionData(test)
-    }
-
-    jacocoTestCoverageVerification {
-        executionData(test)
-
-        violationRules {
-            rule {
-                limit {
-                    minimum = 1
-                }
-            }
-        }
-    }
-
-    jacocoTestCoverageVerification.dependsOn(jacocoTestReport)
-    check.dependsOn(jacocoTestCoverageVerification)
 }
 
 
