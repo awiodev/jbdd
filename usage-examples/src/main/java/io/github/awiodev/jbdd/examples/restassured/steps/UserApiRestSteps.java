@@ -30,7 +30,7 @@ public class UserApiRestSteps implements UserApiSteps {
 
     @Override
     public User thenUserIsCreatedSuccessfully(Response response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(201);
+        restAssuredSteps.thenResponseStatusIs(response, 201);
         User deserialized = restAssuredSteps.thenResponseDeserializesTo(response, User.class);
         Assertions.assertThat(deserialized.getId()).isNotBlank();
         return deserialized;
@@ -38,7 +38,7 @@ public class UserApiRestSteps implements UserApiSteps {
 
     @Override
     public User thenUserDataIsRetrieved(Response response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(200);
+        restAssuredSteps.thenResponseStatusIs(response, 200);
         return restAssuredSteps.thenResponseDeserializesTo(response, User.class);
     }
 

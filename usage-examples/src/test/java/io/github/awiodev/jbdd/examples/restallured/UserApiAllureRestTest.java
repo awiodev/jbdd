@@ -75,7 +75,7 @@ public class UserApiAllureRestTest {
                 user.setEmail(jBddRun.faker().internet().emailAddress());
                 jBddRun.fakeUserServiceSteps().givenUserServiceAcceptsUser(user);
                 jBddRun.context().store(user);
-            }).when("I try to create a user", () -> {
+            }).when("I submit user creation", () -> {
                 Response response =
                     jBddRun.userApiSteps().whenCreatesUser(jBddRun.context().get(User.class));
                 jBddRun.context().store("response", response);

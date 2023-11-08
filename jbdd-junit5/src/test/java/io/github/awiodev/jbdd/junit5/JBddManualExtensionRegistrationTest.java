@@ -1,6 +1,5 @@
 package io.github.awiodev.jbdd.junit5;
 
-import io.github.awiodev.jbdd.core.definition.ObjectsDatabase;
 import io.github.awiodev.jbdd.core.impl.JBdd;
 import io.github.awiodev.jbdd.core.impl.JBddStandardSteps;
 import io.github.awiodev.jbdd.core.impl.ObjectsMapDatabase;
@@ -13,21 +12,20 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class JBddManualExtensionRegistrationTest {
 
-    private final JBddStandardSteps jBddStandardSteps = JBddStandardSteps.builder().build();
     private final List<String> events = new ArrayList<>();
-
-    private final ObjectsDatabase objectsDatabase = ObjectsMapDatabase.builder().build();
 
     @RegisterExtension
     private final JBddExtension extension = JBddExtension.builder()
         .withSetupAndTearDown(() -> {
             events.add("start");
-            return JBdd.builder().withSteps(jBddStandardSteps).build();
+            return JBdd.builder()
+                .withSteps(JBddStandardSteps.builder().build())
+                .build();
         }, run -> {
             events.add("stop");
             run.clean();
         })
-        .withObjectsDatabase(objectsDatabase)
+        .withObjectsDatabase(ObjectsMapDatabase.builder().build())
         .build();
 
     @Nested
