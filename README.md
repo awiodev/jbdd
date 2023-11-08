@@ -402,7 +402,7 @@ Will be presented in the following way in Allure reports:
 
 ![img.png](docs/img/allure-scenario.png)
 
-Some of the steps may be expanded so more details information is presented:
+Some of the steps may be expanded so more detailed information is presented:
 
 ![img.png](docs/img/allure-scenario-expanded.png)
 
