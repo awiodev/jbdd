@@ -76,8 +76,8 @@ public class JBddRestAlluredConfiguration extends JBddStandardConfiguration {
                                        UserApiSteps userApiSteps, Faker faker) {
         return JBddExtension.builder()
             .withSetupAndTearDown(() -> JBddUserApiRun.builder()
-                    .withJBddSteps(JBddAllureSteps.builder().build())
-                    .withJBddStandardContextFactory(JBddStandardContextFactory.builder().build())
+                    .withJBddSteps(steps)
+                    .withJBddStandardContextFactory((JBddStandardContextFactory) contextFactory)
                     .withFakeUserServiceSteps(fakeUserServiceSteps)
                     .withApiSteps(userApiSteps)
                     .withFaker(faker)
