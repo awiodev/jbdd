@@ -32,11 +32,11 @@ public final class RestAssuredActions {
     public RequestSpecBuilder createDefaultSpecBuilder(String baseUrl, String path,
                                                        AuthSupplier authSupplier) {
         RequestSpecBuilder specBuilder = new RequestSpecBuilder()
+            .setConfig(restAssuredConfig)
             .setBaseUri(baseUrl)
             .setBasePath(path)
             .addFilters(filters);
         authSupplier.supply(specBuilder);
-        specBuilder.setConfig(restAssuredConfig);
         return specBuilder;
     }
 
@@ -44,13 +44,13 @@ public final class RestAssuredActions {
                                                            Object payload,
                                                            AuthSupplier authSupplier) {
         RequestSpecBuilder specBuilder = new RequestSpecBuilder()
+            .setConfig(restAssuredConfig)
             .setBaseUri(baseUrl)
             .setBasePath(path)
             .addFilters(filters)
             .setContentType(ContentType.JSON)
             .setBody(payload);
         authSupplier.supply(specBuilder);
-        specBuilder.setConfig(restAssuredConfig);
         return specBuilder;
     }
 
